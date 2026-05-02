@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Біофізика 2.0 — Енергія Космосу</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: #8A6A2A;
+    --deep: #04060F;
+    --deep2: #080C1A;
+    --deep3: #0C1224;
+    --text: #E8E4D8;
+    --text-dim: #9A9080;
+    --accent: #6B9FD4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 200;
+    overflow-x: hidden;
+  }
+
+  /* STARS BACKGROUND */
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .stars canvas { width: 100%; height: 100%; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    z-index: 1;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 20%, rgba(107,159,212,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 8px 20px;
+    border-radius: 40px;
+    margin-bottom: 40px;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 10vw, 110px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin-bottom: 10px;
+    animation: fadeUp 1s 0.15s ease both;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dim));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 3.5vw, 32px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-dim);
+    margin-bottom: 48px;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+
+  .hero-lead {
+    max-width: 600px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.9;
+    color: var(--text-dim);
+    margin-bottom: 60px;
+    animation: fadeUp 1s 0.45s ease both;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--deep);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 20px 44px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(201,168,76,0.3); }
+
+  .price-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+  .price-tag strong {
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  /* DIVIDER */
+  .divider {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 0 40px;
+    margin: 20px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3));
+  }
+  .divider::after { background: linear-gradient(to left, transparent, rgba(201,168,76,0.3)); }
+  .divider-icon { color: var(--gold); font-size: 18px; opacity: 0.6; }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    color: #fff;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  /* PROBLEM SECTION */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .problem-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .problem-card:hover { background: rgba(255,255,255,0.04); }
+
+  .problem-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px;
+    font-weight: 300;
+    color: rgba(201,168,76,0.06);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .problem-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .problem-card p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-dim);
+  }
+
+  /* WHAT YOU GET */
+  .modules {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .module {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 32px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-left: 3px solid var(--gold-dim);
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .module:hover {
+    background: rgba(201,168,76,0.05);
+    border-left-color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  .module-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  .module-text h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .module-text p {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .module-check {
+    color: var(--gold);
+    font-size: 18px;
+  }
+
+  /* ABOUT / PHILOSOPHY */
+  .philosophy {
+    background: linear-gradient(135deg, rgba(201,168,76,0.04), rgba(107,159,212,0.04));
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 72px 60px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .philosophy::before {
+    content: '✦';
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    font-size: 200px;
+    color: rgba(201,168,76,0.03);
+    pointer-events: none;
+  }
+
+  .philosophy blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3vw, 32px);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 32px;
+    border-left: 2px solid var(--gold);
+    padding-left: 32px;
+  }
+
+  .philosophy p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text-dim);
+    max-width: 680px;
+  }
+
+  /* TESTIMONIALS / STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 48px 24px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* TESTIMONIALS */
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .testimonial {
+    padding: 36px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top: 2px solid var(--gold-dim);
+    position: relative;
+  }
+
+  .testimonial::before {
+    content: '"';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px;
+    color: rgba(201,168,76,0.15);
+    position: absolute;
+    top: 10px;
+    left: 24px;
+    line-height: 1;
+  }
+
+  .testimonial p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .testimonial-author {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* CTA FINAL */
+  .cta-final {
+    text-align: center;
+    padding: 100px 40px;
+    position: relative;
+  }
+
+  .cta-final::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-final .section-title {
+    margin-bottom: 20px;
+  }
+
+  .cta-final p {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 500px;
+    margin: 0 auto 48px;
+    line-height: 1.8;
+  }
+
+  .price-block {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .price-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .price-currency {
+    font-size: 24px;
+    color: var(--gold-dim);
+  }
+
+  .price-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .telegram-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 20px 48px;
+    transition: all 0.3s ease;
+  }
+
+  .telegram-btn:hover {
+    background: var(--gold);
+    color: var(--deep);
+    box-shadow: 0 0 40px rgba(201,168,76,0.2);
+  }
+
+  .telegram-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* GUARANTEE */
+  .guarantee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .guarantee-icon { color: var(--gold); font-size: 20px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 40px;
+    text-align: center;
+    color: rgba(255,255,255,0.2);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  /* ORBS */
+  .orb-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 60px;
+    animation: fadeUp 1.2s 0.2s ease both;
+  }
+
+  .orb-core {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.8), rgba(201,168,76,0.2));
+    box-shadow: 0 0 40px rgba(201,168,76,0.4), 0 0 80px rgba(201,168,76,0.15);
+  }
+
+  .orb-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.2);
+    transform: translate(-50%, -50%);
+  }
+  .orb-ring:nth-child(2) { width: 120px; height: 120px; }
+  .orb-ring:nth-child(3) { width: 180px; height: 180px; border-color: rgba(107,159,212,0.15); }
+  .orb-ring:nth-child(4) { width: 260px; height: 260px; border-color: rgba(201,168,76,0.08); }
+
+  .orb-pulse {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.4);
+    animation: pulse-ring 2.5s ease-out infinite;
+  }
+  .orb-pulse:nth-child(5) { animation-delay: 0.8s; }
+  .orb-pulse:nth-child(6) { animation-delay: 1.6s; }
+
+  .orb-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    margin: -4px;
+    box-shadow: 0 0 10px var(--gold);
+  }
+  .orb-dot:nth-child(7) { animation: orbit 6s linear infinite; }
+  .orb-dot:nth-child(8) { animation: orbit 10s linear infinite reverse; width: 5px; height: 5px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* FLOATING ELEMENTS */
+  .float-line {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.2), transparent);
+    pointer-events: none;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(4,6,15,0.95), transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .nav-cta {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    padding-bottom: 2px;
+    transition: border-color 0.3s;
+  }
+  .nav-cta:hover { border-color: var(--gold); }
+
+  /* SCROLL OBSERVER */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    section { padding: 60px 24px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .philosophy { padding: 48px 28px; }
+    .module { grid-template-columns: 40px 1fr; }
+    .module-check { display: none; }
+    .nav { padding: 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Біофізика 2.0</div>
+  <a href="https://t.me/Alex_RGG" target="_blank" class="nav-cta">Записатись →</a>
+</nav>
+
+<!-- STARS CANVAS -->
+<div class="stars">
+  <canvas id="starsCanvas"></canvas>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">✦ Ексклюзивний Курс ✦</div>
+
+  <div class="orb-wrapper">
+    <div class="orb-ring"></div>
+    <div class="orb-ring"></div>
+    <div class="orb-ring"></div>
+    <div class="orb-pulse"></div>
+    <div class="orb-pulse"></div>
+    <div class="orb-core"></div>
+    <div class="orb-dot"></div>
+    <div class="orb-dot"></div>
+  </div>
+
+  <div class="hero-badge">Як брати енергію з космосу</div>
+  <h1 class="hero-title"><em>Біофізика</em> 2.0</h1>
+  <p class="hero-subtitle">Налаштуй своє поле — отримай вічний потік</p>
+
+  <p class="hero-lead">
+    Не знаючи як це працює, ми впусту витрачаємо 30% свого життя. 
+    Налаштувавши процеси один раз — отримаємо постійний приплив енергії назавжди.
+  </p>
+
+  <div class="hero-cta">
+    <a href="https://t.me/Alex_RGG" target="_blank" class="btn-primary">
+      ✦ Почати трансформацію
+    </a>
+    <div class="price-tag">Вартість курсу — <strong>44 444 ₴</strong></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<div class="divider"><span class="divider-icon">◆</span></div>
+
+<section class="reveal">
+  <span class="section-label">Проблема</span>
+  <h2 class="section-title">Чому більшість людей<br><em>живуть не у своїй силі</em></h2>
+  <div class="problem-grid">
+    <div class="problem-card" data-num="01">
+      <h3>30% енергії — у пусту</h3>
+      <p>Більшість людей не знають, що третина їхньої вітальної сили витрачається на хаотичні, ненастроєні процеси. Це як двигун без палива — він крутиться, але нікуди не їде.</p>
+    </div>
+    <div class="problem-card" data-num="02">
+      <h3>Тисячі неправильних шляхів</h3>
+      <p>Правильне рішення — одне. Неправильних — тисячі. Випадкові налаштування неодмінно ведуть у негатив і виснаження. Система або настроєна — або ні.</p>
+    </div>
+    <div class="problem-card" data-num="03">
+      <h3>Лідери знають секрет</h3>
+      <p>Найвпливовіші люди світу мають ці налаштування з народження або навчились їх. Їх внутрішній стрижень не можна зламати — жодними обставинами чи маніпуляціями.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY QUOTE -->
+<div class="divider"><span class="divider-icon">◆</span></div>
+
+<section class="reveal">
+  <div class="philosophy">
+    <blockquote>
+      «Стан потоку буде вашим життєвим фоном — назавжди»
+    </blockquote>
+    <p>
+      Уявіть, що ви прокидаєтесь кожен ранок із внутрішнім зарядом, який не залежить від обставин. 
+      Події навколо вас не мають влади над вашим станом. Ви маєте додаткові сили, 
+      які відкривають нові можливості й досягнення — день за днем, рік за роком.
+      <br><br>
+      Це не мотивація. Це — правильно налаштована біофізична система, яка працює автоматично.
+    </p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="reveal" style="padding-top: 0">
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">30<span style="font-size:28px">%</span></div>
+      <div class="stat-label">Енергії витрачається даремно</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Потік після налаштування</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1×</div>
+      <div class="stat-label">Налаштував — маєш назавжди</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<div class="divider"><span class="divider-icon">◆</span></div>
+
+<section class="reveal">
+  <span class="section-label">Програма курсу</span>
+  <h2 class="section-title">Що ви отримаєте<br><em>у кожному модулі</em></h2>
+  <div class="modules">
+    <div class="module">
+      <div class="module-num">01</div>
+      <div class="module-text">
+        <h4>Фізика енергетичного поля</h4>
+        <p>Як насправді влаштований зв'язок між людиною і космосом. Наукова та практична база біофізичних процесів.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+    <div class="module">
+      <div class="module-num">02</div>
+      <div class="module-text">
+        <h4>Діагностика власного налаштування</h4>
+        <p>Визначте, які процеси у вас зараз настроєні «випадково» і куди йде ваша прихована енергія.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+    <div class="module">
+      <div class="module-num">03</div>
+      <div class="module-text">
+        <h4>Практики відновлення зв'язку</h4>
+        <p>Найефективніші техніки налаштування біофізики — ті самі, що використовують лідери та впливові люди світу.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+    <div class="module">
+      <div class="module-num">04</div>
+      <div class="module-text">
+        <h4>Закріплення внутрішнього стрижня</h4>
+        <p>Свідоме закріплення результату так, щоб жодна зовнішня обставина не змогла його зруйнувати.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+    <div class="module">
+      <div class="module-num">05</div>
+      <div class="module-text">
+        <h4>Стан потоку як постійний фон</h4>
+        <p>Переведення потокового стану з «випадкових моментів» у ваш базовий режим існування 24/7.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+    <div class="module">
+      <div class="module-num">06</div>
+      <div class="module-text">
+        <h4>Захист і підтримка системи</h4>
+        <p>Як тримати налаштування роками, підсилювати їх і не допустити «поломки» через стрес або зовнішній вплив.</p>
+      </div>
+      <div class="module-check">✦</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<div class="divider"><span class="divider-icon">◆</span></div>
+
+<section class="reveal">
+  <span class="section-label">Результати учасників</span>
+  <h2 class="section-title">Що кажуть ті,<br><em>хто вже налаштував себе</em></h2>
+  <div class="testimonials">
+    <div class="testimonial">
+      <p>Я не вірила, що можна настільки змінити якість кожного дня. Після курсу я дійсно відчуваю, що живу — а не просто функціоную.</p>
+      <div class="testimonial-author">Марина К. — підприємець, Київ</div>
+    </div>
+    <div class="testimonial">
+      <p>Стан потоку більше не залежить від того, чи все ідеально навколо. Я маю внутрішнє джерело — і це змінює все.</p>
+      <div class="testimonial-author">Дмитро В. — IT-керівник, Львів</div>
+    </div>
+    <div class="testimonial">
+      <p>Вперше в житті відчула, що моя енергія — моя. Жодні люди чи ситуації більше не можуть її забирати.</p>
+      <div class="testimonial-author">Оксана Р. — коуч, Одеса</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="divider"><span class="divider-icon">◆</span></div>
+
+<div class="cta-final reveal">
+  <span class="section-label">Починайте зараз</span>
+  <h2 class="section-title">Ваш внутрішній стрижень<br><em>чекає на налаштування</em></h2>
+  <p>Одне рішення — і ви отримуєте доступ до практик, які вже змінили життя тисяч людей по всьому світу.</p>
+
+  <div class="price-block">
+    <div class="price-main">44 444 <span class="price-currency">₴</span></div>
+    <div class="price-note">Повний курс · Довічний доступ</div>
+  </div>
+
+  <br>
+
+  <a href="https://t.me/Alex_RGG" target="_blank" class="telegram-btn">
+    <svg class="telegram-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-1.97 9.288c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.088 14.56l-2.95-.924c-.642-.2-.654-.642.136-.953l11.5-4.433c.535-.194 1.003.131.788.998z"/>
+    </svg>
+    Написати для запису
+  </a>
+
+  <div class="guarantee">
+    <span class="guarantee-icon">✦</span>
+    <span>Особиста консультація перед стартом · @Alex_RGG</span>
+    <span class="guarantee-icon">✦</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Біофізика 2.0 · Всі права захищені · <a href="https://t.me/Alex_RGG" target="_blank" style="color: var(--gold); text-decoration: none;">@Alex_RGG</a></p>
+</footer>
+
+<script>
+// STARS
+const canvas = document.getElementById('starsCanvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2,
+      o: Math.random() * 0.6 + 0.1,
+      speed: Math.random() * 0.3 + 0.05,
+      twinkle: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const t = Date.now() / 1000;
+  stars.forEach(s => {
+    s.twinkle += 0.01;
+    const opacity = s.o * (0.7 + 0.3 * Math.sin(s.twinkle));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,248,220,${opacity})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+resize();
+initStars();
+drawStars();
+window.addEventListener('resize', () => { resize(); initStars(); });
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
